@@ -1,55 +1,64 @@
-import React, { useState } from "react";
+import React, { useReducer } from "react";
 import { View, Text, Button, StyleSheet, TouchableOpacity } from "react-native";
 import ColorCounter from "../components/ColorCounter";
 
 const COLOR_INCREMENT = 20;
 
-const SquareScreen = () => {
-  const [redColor, setRed] = useState(0);
-  const [greenColor, setGreen] = useState(0);
-  const [blueColor, setBlue] = useState(0);
+const reducer = (state, action) => {
+  // state === { red:number, green:number, blue:number }
+  // action === { colorToChange: 'red' || 'green' || 'blue', amount: 15 || -15 }
 
-  setColor = (color, change) => {
-    switch (color) {
-      case "red":
-        (redColor + change > 225 || redColor + change < 0) ? null : setRed(redColor + change);
-        return;
-      case 'green':
-        (greenColor + change > 225 || greenColor + change < 0) ? null : setGreen(greenColor + change);
-        return;
-      case 'blue':
-        (blueColor + change > 225 || blueColor + change < 0) ? null : setBlue(blueColor + change);
-        return;
-      default: return;
-    }
-  };
+  switch(action.type){
+    case('change_red'):
+      // NEVER DO THIS: state.red = state.red - 15;
+      // Instead this creates a NEW object that will replace the entire state object and not adjust it.
+      return (state.red + action.payload > 255 || state.red + action.payload < 0) 
+        ? state 
+        : { ...state, red: state.red + action.payload };
+    case('change_green'):
+      return (state.green + action.payload > 255 || state.green + action.payload < 0) 
+        ? state 
+        : { ...state, green: state.green + action.payload };
+    case('change_blue'):
+      return (state.blue + action.payload > 255 || state.blue + action.payload < 0) 
+        ? state 
+        : { ...state, blue: state.blue + action.payload };
+    default:
+      return state;
+  }
+};
+
+const SquareScreen = () => {
+
+const [state, dispatch] = useReducer(reducer, { red:0, green:0, blue:0 })
+const { red, green, blue } = state;
 
   return (
     <View>
       <Text>this is the screen</Text>
       <ColorCounter
         color="Red"
-        value={redColor}
-        more={() => setColor("red", COLOR_INCREMENT)}
-        less={() => setColor("red", -1 * COLOR_INCREMENT)}
+        value={red}
+        more={() => dispatch({ type: 'change_red', payload: COLOR_INCREMENT})}
+        less={() => dispatch({ type: 'change_red', payload: -1 * COLOR_INCREMENT})}
       />
       <ColorCounter
         color="Green"
-        value={greenColor}
-        more={() => setColor("green", COLOR_INCREMENT)}
-        less={() => setColor("green", -1 * COLOR_INCREMENT)}
+        value={green}
+        more={() => dispatch({ type: 'change_green', payload: COLOR_INCREMENT})}
+        less={() => dispatch({ type: 'change_green', payload: -1 * COLOR_INCREMENT})}
       />
       <ColorCounter
         color="Blue"
-        value={blueColor}
-        more={() => setColor("blue", COLOR_INCREMENT)}
-        less={() => setColor("blue", -1 * COLOR_INCREMENT)}
+        value={blue}
+        more={() => dispatch({ type: 'change_blue', payload: COLOR_INCREMENT})}
+        less={() => dispatch({ type: 'change_blue', payload: -1 * COLOR_INCREMENT})}
       />
       <View
         style={{
           height: 200,
           width: 200,
-          backgroundColor: `rgb(${redColor}, ${greenColor}, ${blueColor})`
+          backgroundColor: `rgb(${red}, ${green}, ${blue})`
         }}
       ></View>
     </View>
