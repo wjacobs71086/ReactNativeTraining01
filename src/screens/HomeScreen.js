@@ -40,6 +40,11 @@ const HomeScreen = ({ navigation }) => (
       onPress={() => navigation.navigate("Text")}
       style={styles.buttons}
     />
+    <Button
+      title="Go to Box Layout Screen Page Demo"
+      onPress={() => navigation.navigate("Box")}
+      style={styles.buttons}
+    />
   </View>
 );
 
